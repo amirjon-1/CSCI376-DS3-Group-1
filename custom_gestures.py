@@ -9,6 +9,37 @@ mp_hands = mp.solutions.hands
 # Define a function to calculate the distance between two points
 def calculate_distance(point1, point2):
     return math.hypot(point2[0]-point1[0], point2[1]-point1[1])
+    
+def recognize_thumb_direction(hand_landmarks):
+    thumb_tip = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP]
+    thumb_mcp = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_MCP]
+
+    index_tip = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP]
+    middle_tip = hand_landmarks.landmark[mp_hands.HandLandmark.MIDDLE_FINGER_TIP]
+    ring_tip = hand_landmarks.landmark[mp_hands.HandLandmark.RING_FINGER_TIP]
+    pinky_tip = hand_landmarks.landmark[mp_hands.HandLandmark.PINKY_TIP]
+
+    index_pip = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_PIP]
+    middle_pip = hand_landmarks.landmark[mp_hands.HandLandmark.MIDDLE_FINGER_PIP]
+    ring_pip = hand_landmarks.landmark[mp_hands.HandLandmark.RING_FINGER_PIP]
+    pinky_pip = hand_landmarks.landmark[mp_hands.HandLandmark.PINKY_PIP]
+
+    # Check if fingers are curled (i.e., their tips are close to their respective PIP joints)
+    fingers_curled = (
+        calculate_distance((index_tip.x, index_tip.y), (index_pip.x, index_pip.y)) < 0.05 and
+        calculate_distance((middle_tip.x, middle_tip.y), (middle_pip.x, middle_pip.y)) < 0.05 and
+        calculate_distance((ring_tip.x, ring_tip.y), (ring_pip.x, ring_pip.y)) < 0.05 and
+        calculate_distance((pinky_tip.x, pinky_tip.y), (pinky_pip.x, pinky_pip.y)) < 0.05
+    )
+
+    # Determine thumb direction
+    if fingers_curled:
+        if thumb_tip.x > thumb_mcp.x:  # Thumb pointing to the right
+            return "Thumbs Right"
+        elif thumb_tip.x < thumb_mcp.x:  # Thumb pointing to the left
+            return "Thumbs Left"
+    
+    return "Unknown"
 
 # Define a simple gesture recognition function
 def recognize_palm(hand_landmarks):
