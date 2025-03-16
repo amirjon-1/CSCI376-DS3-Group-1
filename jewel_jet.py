@@ -51,9 +51,8 @@ def recognize_thumb_direction(hand_landmarks):
         calculate_distance((pinky_mcp.x, pinky_mcp.y), (pinky_pip.x, pinky_pip.y)) < 0.2
     )
 
-    # Determine thumb direction
-    #print(fingers_curled, thumb_tip.y, thumb_mcp.y)
-    if fingers_curled: #and abs((thumb_tip.y - thumb_mcp.y) > 0.3): #fingers curled and horizontal
+    # Determine thumb direction if fingers are curled and it is not a closed fists
+    if fingers_curled:
         if (thumb_tip.x > thumb_mcp.x):  # Thumb pointing to the right
             return "Thumbs_Right"
         elif thumb_tip.x < thumb_mcp.x:  # Thumb pointing to the left
@@ -76,7 +75,7 @@ def main():
     ) as hands:
 
         while cap.isOpened():
-            time.sleep(0.2) # add a rest to reduce redundancy in recognition
+            time.sleep(0.25) # add a rest to reduce redundancy in re
             success, image = cap.read()
             if not success:
                 print("Ignoring empty camera frame.")
@@ -103,6 +102,8 @@ def main():
                     pyautogui.press('down')
                 elif recognized_gesture == "Open_Palm" and confidence > 0.5 and previous_gesture != "Open_Palm":
                     webbrowser.open('https://armorgames.com/jewel-jet-game/19491?tag-referral=keyboard-only', new=2)
+                elif recognized_gesture == "Victory" and confidence > 0.5 and previous_gesture != "Open_Palm":
+                    pyautogui.press('r')  # to restart
                 elif recognized_gesture == "Closed_Fist" and confidence > 0.5 and previous_gesture != "Closed_Fist":
                     pyautogui.press("space")
                 else:
@@ -120,7 +121,7 @@ def main():
                     elif gesture == "Thumbs_Left" and previous_gesture != "Thumbs_Left":
                         pyautogui.press('left')
 
-                    recognized_gesture = gesture # for testing
+                    recognized_gesture = gesture
                     
                     cv2.putText(image, gesture, 
                                 (int(hand_landmarks.landmark[0].x * image.shape[1]), 
