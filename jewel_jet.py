@@ -76,6 +76,7 @@ def main():
     ) as hands:
 
         while cap.isOpened():
+            time.sleep(0.2) # add a rest to reduce redundancy in recognition
             success, image = cap.read()
             if not success:
                 print("Ignoring empty camera frame.")
@@ -141,4 +142,5 @@ def main():
         cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    main()
+    main() 
+   
