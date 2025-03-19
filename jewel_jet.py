@@ -106,11 +106,9 @@ def main():
                     pyautogui.press('r')  # to restart
                 elif recognized_gesture == "Closed_Fist" and confidence > 0.5 and previous_gesture != "Closed_Fist":
                     pyautogui.press("space")
-                else:
+                elif recognized_gesture!=previous_gesture:
                     recognized_gesture = "Unknown"
 
-                cv2.putText(image, f"Gesture: {recognized_gesture} ({confidence:.2f})", 
-                            (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
                 
             if results.multi_hand_landmarks and recognized_gesture == "Unknown":
                 for hand_landmarks in results.multi_hand_landmarks:
@@ -123,14 +121,15 @@ def main():
 
                     recognized_gesture = gesture
                     
-                    cv2.putText(image, gesture, 
-                                (int(hand_landmarks.landmark[0].x * image.shape[1]), 
-                                 int(hand_landmarks.landmark[0].y * image.shape[0]) - 20),
-                                cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                    
                     
             
             if recognized_gesture != "Unknown" and recognized_gesture != previous_gesture:
                 print('final', recognized_gesture)
+
+            cv2.putText(image, f"Gesture: {recognized_gesture}", 
+                            (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+        
             
             previous_gesture = recognized_gesture
             
